@@ -1,5 +1,4 @@
-
-
+import numpy as np
 import tensorflow as tf
 
 
@@ -25,17 +24,22 @@ class Autoencoder:
         self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
         self.saver = tf.train.Saver()
 
-    def train(self, data):
-        num_samples = len(data)
+    def train(self, data, batch_size=10):
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             for i in range(self.epoch):
-                for j in range(num_samples):
-                    l, _ = sess.run([self.loss, self.train_op], feed_dict={self.x: [data[j]]})
+                for j in range(500):
+                    a = np.random.choice(len(data), batch_size, replace=False)
+                    batch = data[a]
+                    batch_data = batch
+                    l, _ = sess.run([self.loss, self.train_op], feed_dict={self.x: batch_data})
                 if i % 10 == 0:
                     print('epoch {0}: loss = {1}'.format(i, l))
                     self.saver.save(sess, './model.ckpt')
             self.saver.save(sess, './model.ckpt')
+
+    def get_batch(self, X, size):
+        a = np
 
     def test(self, data):
         with tf.Session() as sess:
